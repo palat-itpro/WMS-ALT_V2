@@ -1,0 +1,35 @@
+<form [formGroup]="AddContForm">
+
+  <mat-form-field>
+    <input matInput placeholder="Inspection date" formControlName="inspection">
+  </mat-form-field>
+
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Choose a date</mat-label>
+    <input matInput [matDatepicker]="picker" formControlName="dft">
+    <mat-datepicker-toggle matSuffix [for]="picker">
+      <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+    </mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <div formArrayName="Sku">
+
+    <div *ngFor="let item of Skuform.controls;let i=index" [formGroupName]="i">
+
+      <mat-form-field>
+        <input matInput placeholder="" formControlName="skuCode">
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput placeholder="" formControlName="qty">
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" (click)="deleteSku(i)">Delete sku</button>
+
+    </div>
+  </div>
+
+  <button mat-raised-button color="primary" (click)="addSku()">Add sku</button>
+
+</form>

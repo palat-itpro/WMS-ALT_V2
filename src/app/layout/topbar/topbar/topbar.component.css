@@ -1,0 +1,49 @@
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+mat-toolbar {
+  z-index: 8
+}
+
+.page-container {
+  height: 800px;
+  width: auto;
+}
+
+.sidenav {
+  width: 200px;
+  padding-right: 8px;
+}
+
+section {
+  display: table;
+}
+
+.label {
+  display: table-cell;
+  font-size: 14px;
+  margin-left: 8px;
+  min-width: 10px;
+}
+
+.button-row {
+  padding-left: 10px;
+}
+
+.button-row .mat-button-base {
+  margin: 8px 8px 8px 0;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  width: 120px;
+}
