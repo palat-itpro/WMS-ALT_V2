@@ -1,27 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatDialog } from '@angular/material/dialog'
-import { AddcontainerComponent } from './addcontainer/addcontainer.component'
+import { MatDialog } from '@angular/material/dialog';
+import { AddcontainerComponent } from './addcontainer/addcontainer.component';
+import { AngularFirestore } from '@angular/fire/firestore'
+import { UnloaddialogComponent } from './unloaddialog/unloaddialog.component'
+import { ExwhService } from '../services/exwh.service';
 
-export interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
+export interface exWHcont {
+  added_by : string;
+  agent: string;
+  container_number: string;
+  date_added: number;
+  dft: number;
+  inspection: number;
+  shipment_number: number;
+  sku: [skuCode: string,qty: number];
+  vessel: string;
 }
-
-const ELEMENT_DATA: PeriodicElement[] = [
-  {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
-  {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
-  {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-  {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-  {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-  {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-  {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
-  {position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O'},
-  {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
-  {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
-];
 
 @Component({
   selector: 'app-exwhcont',
@@ -30,21 +25,57 @@ const ELEMENT_DATA: PeriodicElement[] = [
 })
 export class ExwhcontComponent implements OnInit {
 
-  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
-  dataSource = new MatTableDataSource(ELEMENT_DATA);
+  lae_exWHRef = this.afs.collection('lae-exwh')
+
+
+  constructor(public dialog: MatDialog,
+    public afs: AngularFirestore,
+    public exwhSv:ExwhService
+    ) { }
+
+  openDialog() {
+    this.dialog.open(AddcontainerComponent);
+  }
+
+  exWHsubscribtion = this.afs.collection('lae-exwh', ref => ref.where('status', '==', 'Ready to unload'))
+  .valueChanges();
+  exWHdata!: any;
+
+  displayedColumns: string[] = ['Agent',
+  'Shipment_Number',
+   'Container_Number',
+    'DFT',
+    'Product',
+    'Inspection',
+    'Vessel_Name',
+    'action'
+  ];
+  dataSource: any;
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  constructor(public dialog: MatDialog) { }
-
-  openDialog() {
-    this.dialog.open(AddcontainerComponent);
+  async settoUnloading(sm: string,cnt: string) {
+    console.log(sm,cnt)
+    this.exwhSv.selectedCont = {shipment_number:sm,container_number:cnt}
+    this.dialog.open(UnloaddialogComponent);
   }
 
-  ngOnInit(): void {
+
+  ngOnInit() {
+    this.exWHsubscribtion.subscribe((res: any) =>{
+      // res.forEach((element: any) => {
+      //   console.log(element.payload.doc.id)
+      // });
+      // this.exWHdata = res;
+      this.dataSource = new MatTableDataSource(res);
+    });
+  }
+
+  ngOnDestroy() {
+    this.exWHsubscribtion.subscribe().unsubscribe();
   }
 
 }

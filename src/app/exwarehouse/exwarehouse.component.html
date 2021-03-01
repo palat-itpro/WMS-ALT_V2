@@ -1,11 +1,11 @@
 
 <mat-card class="mat-elevation-z0">
-<mat-tab-group style="height: 800px;">
+<mat-tab-group style="height: 100%;">
 
   <mat-tab>
     <ng-template mat-tab-label>
       <mat-icon class="tab-icon">view_sidebar</mat-icon>
-      Ex-Warehouse
+      Ready to unload
     </ng-template>
 <app-exwhcont></app-exwhcont>
   </mat-tab>
@@ -13,17 +13,16 @@
   <mat-tab>
     <ng-template mat-tab-label>
       <mat-icon class="tab-icon">check_circle</mat-icon>
-      Ready to unload
+      Unloading
     </ng-template>
-    Content 1
+    <app-unloading></app-unloading>
   </mat-tab>
 
   <mat-tab>
     <ng-template mat-tab-label>
       <mat-icon class="tab-icon">view_compact</mat-icon>
-      Unloading
+      Insurance Claim
     </ng-template>
-
     Content 3
   </mat-tab>
 
@@ -32,7 +31,7 @@
       <mat-icon class="tab-icon">video_label</mat-icon>
       Empty containers
     </ng-template>
-    Content 2
+    <app-emptycont></app-emptycont>
   </mat-tab>
 
 </mat-tab-group>

@@ -1,0 +1,77 @@
+<form [formGroup]="confUnloadForm" autocomplete="off">
+  <div fxLayout="column" fxLayoutGap="30px" fxFlexAlign="center">
+    <mat-toolbar>
+      <span>
+        Confirm unloaded products from
+        {{ confUnloadForm.value.container_number }}
+      </span>
+    </mat-toolbar>
+
+    <h4>
+      <mat-icon style="vertical-align: middle">ballot</mat-icon>Packing list
+    </h4>
+    <div>
+      <div style="margin-left: 30px" *ngFor="let item of confUnloadForm.value.skus; let i = index">
+        <li>
+          SKU CODE :
+          {{ item.skuCode }}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;QTY :
+          {{ item.qty }}
+        </li>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+    <br />
+  </div>
+
+  <div fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="start start">
+    <mat-form-field appearance="legacy">
+      <mat-label>Chief unload officer</mat-label>
+      <mat-select formControlName="chiefUnload">
+        <mat-option value="Daniel"> Daniel </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div formArrayName="remaining">
+    <div *ngFor="let item of Remainingform.controls; let i = index" [formGroupName]="i">
+      <div fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="space-around center">
+        <mat-form-field>
+          <mat-label>Sku Code</mat-label>
+          <input matInput readonly type="text" formControlName="skuCode" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>QTY</mat-label>
+          <input matInput type="number" max="{{ confUnloadForm.value.remaining[i].qty }}" min="0"
+            formControlName="qty" />
+          <span matSuffix>{{ confUnloadForm.value.remaining[i].unit }}</span>
+        </mat-form-field>
+
+        <!-- <button mat-raised-button color="warn" (click)="deleteSku(i)">Delete sku</button> -->
+      </div>
+    </div>
+  </div>
+
+  <!-- <button mat-raised-button color="accent" (click)="addSku()">Add sku</button> -->
+</form>
+<br />
+
+<div *ngIf="confUnloadForm.valid">
+  <div *ngIf="loading == true">
+    <mat-spinner></mat-spinner>
+  </div>
+  <button (matDialogClose)="(loading == false && confUnloadForm.value.skus[0] != '')" mat-raised-button color="primary"
+    (click)="submitHandler()">
+    Submit
+  </button>
+  <span style="margin: 8px 8px 8px 0"></span>
+  <button (matDialogClose)="(loading == false && confUnloadForm.value.skus[0] != '')" mat-raised-button color="warn">
+    cancel
+  </button>
+</div>
+<!--
+<div style="width: 600px;">
+  {{ confUnloadForm.value | json }}
+
+</div> -->

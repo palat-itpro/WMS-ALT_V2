@@ -10,8 +10,6 @@ import { AngularFireModule } from "@angular/fire";
 import { AngularFirestoreModule } from "@angular/fire/firestore";
 import { AngularFireAuthModule } from "@angular/fire/auth";
 
-
-
 //Env
 import { environment } from '../environments/environment';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -31,8 +29,12 @@ import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core'
-
+import {MatGridListModule} from '@angular/material/grid-list';
 import { MatDialogModule } from '@angular/material/dialog';
+import {MatRippleModule} from '@angular/material/core';
+import {MatSelectModule} from '@angular/material/select';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 
 //Components
@@ -46,8 +48,13 @@ import { StockctrlComponent } from './stockctrl/stockctrl.component';
 import { RouterModule } from '@angular/router';
 import { ExwhcontComponent } from './exwarehouse/exwhcont/exwhcont.component';
 import { AddcontainerComponent } from './exwarehouse/exwhcont/addcontainer/addcontainer.component';
-import { ExwhComponent } from './exwarehouse/services/exwh/exwh.component';
-
+import { ExwhComponent } from './exwarehouse/exwh/exwh.component';
+import { LoginComponent } from './auth/login/login.component';
+import { LoginDialogComponent } from './auth/login/login.component';
+import { UnloaddialogComponent } from './exwarehouse/exwhcont/unloaddialog/unloaddialog.component';
+import { UnloadingComponent } from './exwarehouse/exwhcont/unloading/unloading.component';
+import { EmptycontComponent } from './exwarehouse/exwhcont/emptycont/emptycont.component'
+import { ConfirmunloadComponent } from './exwarehouse/exwhcont/unloading/confirmunload/confirmunload.component'
 
 @NgModule({
   declarations: [
@@ -60,7 +67,13 @@ import { ExwhComponent } from './exwarehouse/services/exwh/exwh.component';
     StockctrlComponent,
     ExwhcontComponent,
     AddcontainerComponent,
-    ExwhComponent
+    ExwhComponent,
+    LoginComponent,
+    LoginDialogComponent,
+    UnloaddialogComponent,
+    UnloadingComponent,
+    EmptycontComponent,
+    ConfirmunloadComponent
   ],
   imports: [
     RouterModule,
@@ -87,7 +100,12 @@ import { ExwhComponent } from './exwarehouse/services/exwh/exwh.component';
     ReactiveFormsModule,
     MatDialogModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatGridListModule,
+    MatRippleModule,
+    MatSelectModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule
   ],
   providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }],
   bootstrap: [AppComponent]

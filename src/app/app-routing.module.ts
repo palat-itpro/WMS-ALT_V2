@@ -6,9 +6,11 @@ import { ExwarehouseComponent } from './exwarehouse/exwarehouse.component';
 import { StockctrlComponent } from './stockctrl/stockctrl.component';
 import { SohComponent } from './soh/soh.component';
 
+import { LoginComponent } from './auth/login/login.component';
 
 const routes: Routes = [
-  { path: '', component: DashboardComponent },
+  { path: 'dashboard', component: DashboardComponent },
+  { path: '', component: LoginComponent },
   { path: 'exwh', component: ExwarehouseComponent },
   { path: 'stkctrl', component: StockctrlComponent },
   { path: 'soh', component: SohComponent },

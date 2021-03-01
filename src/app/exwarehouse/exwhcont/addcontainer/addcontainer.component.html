@@ -1,35 +1,136 @@
-<form [formGroup]="AddContForm">
+<form [formGroup]="AddContForm" autocomplete="off">
 
-  <mat-form-field>
-    <input matInput placeholder="Inspection date" formControlName="inspection">
+  <div fxLayout="column" fxLayoutGap="30px" fxFlexAlign="center">
+
+    <mat-toolbar>
+      <span>Add Container : {{AddContForm.value.shipment_number}}</span>
+    </mat-toolbar>
+
+    <div fxLayout="row" fxLayoutGap="30px" fxFlexAlign="center">
+
+      <mat-form-field>
+        <mat-label>Shipment Number</mat-label>
+        <input matInput formControlName="shipment_number">
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Container Number</mat-label>
+        <input matInput formControlName="container_number">
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Vessel</mat-label>
+        <input matInput formControlName="vessel">
+      </mat-form-field>
+
+    </div>
+
+  </div>
+
+  <div fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="start start">
+    <mat-form-field appearance="legacy">
+      <mat-label>Naqia Inspection</mat-label>
+      <input matInput [matDatepicker]="inspection" formControlName="inspection">
+      <mat-datepicker-toggle matSuffix [for]="inspection">
+        <mat-icon matDatepickerToggleIcon>today</mat-icon>
+      </mat-datepicker-toggle>
+      <mat-datepicker #inspection></mat-datepicker>
+    </mat-form-field>
+
+
+    <mat-form-field appearance="legacy">
+      <mat-label>Detention</mat-label>
+      <input matInput [matDatepicker]="dft" formControlName="dft">
+      <mat-datepicker-toggle matSuffix [for]="dft">
+        <mat-icon matDatepickerToggleIcon>today</mat-icon>
+      </mat-datepicker-toggle>
+      <mat-datepicker #dft></mat-datepicker>
+    </mat-form-field>
+  </div>
+
+
+  <mat-form-field appearance="legacy">
+    <mat-label>Agent</mat-label>
+    <mat-select formControlName="agent">
+      <mat-option *ngFor="let agent of ShipAgents" [value]="agent.name">
+        {{agent.name}}
+      </mat-option>
+    </mat-select>
   </mat-form-field>
 
-  <mat-form-field class="example-full-width" appearance="fill">
-    <mat-label>Choose a date</mat-label>
-    <input matInput [matDatepicker]="picker" formControlName="dft">
-    <mat-datepicker-toggle matSuffix [for]="picker">
-      <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
-    </mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
-  </mat-form-field>
 
-  <div formArrayName="Sku">
+  <div formArrayName="skus">
 
     <div *ngFor="let item of Skuform.controls;let i=index" [formGroupName]="i">
 
-      <mat-form-field>
-        <input matInput placeholder="" formControlName="skuCode">
-      </mat-form-field>
+      <div fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="space-around center">
 
-      <mat-form-field>
-        <input matInput placeholder="" formControlName="qty">
-      </mat-form-field>
+        <mat-form-field appearance="legacy">
+          <mat-label>Products</mat-label>
+          <mat-select formControlName="skuCode">
+            <mat-option disabled>--- 1KG Rice ---</mat-option>
+            <mat-option *ngFor="let group of KG1" [value]="group.CodeName">
+              {{group.CodeName + ' | ' + group.FullName}}
+            </mat-option>
+            <mat-option disabled>--- 5KG Rice ---</mat-option>
+            <mat-option *ngFor="let group of KG5" [value]="group.CodeName">
+              {{group.CodeName + ' | ' + group.FullName}}
+            </mat-option>
+            <mat-option disabled>--- 10KG Rice ---</mat-option>
+            <mat-option *ngFor="let group of KG10" [value]="group.CodeName">
+              {{group.CodeName + ' | ' + group.FullName}}
+            </mat-option>
+            <mat-option disabled>--- 20KG Rice ---</mat-option>
+            <mat-option *ngFor="let group of KG20" [value]="group.CodeName">
+              {{group.CodeName + ' | ' + group.FullName}}
+            </mat-option>
+            <mat-option disabled>--- Salts ---</mat-option>
+            <mat-option *ngFor="let group of Salts" [value]="group.CodeName">
+              {{group.CodeName + ' | ' + group.FullName}}
+            </mat-option>
+            <mat-option disabled>--- Lunchbox ---</mat-option>
+            <mat-option *ngFor="let group of Lunchbox" [value]="group.CodeName">
+              {{group.CodeName + ' | ' + group.FullName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
 
-      <button mat-raised-button color="primary" (click)="deleteSku(i)">Delete sku</button>
+        <mat-form-field>
+          <mat-label>QTY</mat-label>
+          <input matInput type="number" max="2500" formControlName="qty">
+        </mat-form-field>
 
+        <mat-form-field appearance="legacy">
+          <mat-label>Unit</mat-label>
+          <mat-select formControlName="unit">
+            <mat-option value="Bags">
+              Bags
+            </mat-option>
+            <mat-option value="Bales">
+              Bales
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+
+        <button mat-raised-button color="warn" (click)="deleteSku(i)">Delete sku</button>
+      </div>
     </div>
   </div>
 
-  <button mat-raised-button color="primary" (click)="addSku()">Add sku</button>
+  <button mat-raised-button color="accent" (click)="addSku()">Add sku</button>
 
 </form>
+<br>
+
+<div *ngIf="AddContForm.valid">
+  <div *ngIf="loading == true">
+    <mat-spinner></mat-spinner>
+  </div>
+  <button (matDialogClose)="loading == false && AddContForm.value.skus[0] !=  ''" mat-raised-button color="primary"
+    (click)="submitHandler()">Submit</button>
+</div>
+
+
+
+<!-- {{ AddContForm.value | json }} -->

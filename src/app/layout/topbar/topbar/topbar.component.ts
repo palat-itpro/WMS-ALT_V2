@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserAuthService } from '../../../auth/user-auth.service'
 import { Menuitems } from '../../../models/menuitems'
+
 @Component({
   selector: 'app-topbar',
   templateUrl: './topbar.component.html',
@@ -21,6 +22,11 @@ export class TopbarComponent implements OnInit {
 
   constructor(private userAuth: UserAuthService) {
 
+   }
+
+
+   logOut() {
+     this.userAuth.LogOut();
    }
 
 
