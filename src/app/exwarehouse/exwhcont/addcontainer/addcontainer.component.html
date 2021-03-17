@@ -109,6 +109,9 @@
             <mat-option value="Bales">
               Bales
             </mat-option>
+            <mat-option value="Bundles">
+              Bundles
+            </mat-option>
           </mat-select>
         </mat-form-field>
 
@@ -130,7 +133,3 @@
   <button (matDialogClose)="loading == false && AddContForm.value.skus[0] !=  ''" mat-raised-button color="primary"
     (click)="submitHandler()">Submit</button>
 </div>
-
-
-
-<!-- {{ AddContForm.value | json }} -->

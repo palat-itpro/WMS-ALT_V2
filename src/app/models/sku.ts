@@ -2,6 +2,7 @@
 
 export const KG1Rice: any = [
   {
+    qty: 0,
     CodeName: 'JG1',
     FullName: 'Jasmine Rice 20 x 1kg',
     Color: '',
@@ -11,6 +12,7 @@ export const KG1Rice: any = [
     Qty_bags_ton: 1000,
   },
   {
+    qty: 0,
     CodeName: 'A1',
     FullName: 'Super A1 20 x 1kg',
     Color: '',
@@ -21,6 +23,7 @@ export const KG1Rice: any = [
     Qty_bags_ton: 1000,
   },
   {
+    qty: 0,
     CodeName: 'SW1',
     FullName: 'Sweet Rice 20 x 1kg',
     Color: '',
@@ -30,6 +33,7 @@ export const KG1Rice: any = [
     Qty_in_ton: 20,
   },
   {
+    qty: 0,
     CodeName: 'S1',
     FullName: 'Star Rice 20 x 1 Kg',
     Color: '',
@@ -39,6 +43,7 @@ export const KG1Rice: any = [
     Qty_in_ton: 20,
   },
   {
+    qty: 0,
     CodeName: 'JB1',
     FullName: 'Brown rice 20 x 1kg',
     Color: '',
@@ -48,6 +53,7 @@ export const KG1Rice: any = [
     Qty_in_ton: 20,
   },
   {
+    qty: 0,
     CodeName: 'F1',
     FullName: 'Frangipani rice 20 X 1kg',
     Color: '',
@@ -57,6 +63,7 @@ export const KG1Rice: any = [
     Qty_in_ton: 20,
   },
   {
+    qty: 0,
     CodeName: 'JR1',
     FullName: 'Jasmine Red rice 20x1 kg',
     Color: '',
@@ -69,6 +76,7 @@ export const KG1Rice: any = [
 
 export const KG5Rice: any = [
   {
+    qty: 0,
     CodeName: 'JG5',
     FullName: 'Jasmine Rice 4 x 5kg',
     Color: '',
@@ -78,6 +86,7 @@ export const KG5Rice: any = [
     Qty_in_ton: 200,
   },
   {
+    qty: 0,
     CodeName: 'A5',
     FullName: 'Super A1 4 x 5kg',
     Color: '',
@@ -87,6 +96,7 @@ export const KG5Rice: any = [
     Qty_in_ton: 20,
   },
   {
+    qty: 0,
     CodeName: 'S5',
     FullName: 'Star Rice 4 x 5kg',
     Color: '',
@@ -96,6 +106,7 @@ export const KG5Rice: any = [
     Qty_in_ton: 20,
   },
   {
+    qty: 0,
     CodeName: 'F5',
     FullName: 'Frangipani rice 4 X 5 kg',
     Color: '',
@@ -105,6 +116,7 @@ export const KG5Rice: any = [
     Qty_in_ton: 20,
   },
   {
+    qty: 0,
     CodeName: 'JR5',
     FullName: 'Jasmine Red rice 4x5 kg',
     Color: '',
@@ -117,6 +129,7 @@ export const KG5Rice: any = [
 
 export const KG10Rice: any = [
   {
+    qty: 0,
     CodeName: 'JG10',
     FullName: 'Jasmine Rice 10 kg',
     Color: '',
@@ -126,6 +139,7 @@ export const KG10Rice: any = [
     Qty_in_ton: 100,
   },
   {
+    qty: 0,
     CodeName: 'A10',
     FullName: 'Super A1 10kg',
     Color: '',
@@ -135,6 +149,7 @@ export const KG10Rice: any = [
     Qty_in_ton: 20,
   },
   {
+    qty: 0,
     CodeName: 'S10',
     FullName: 'Star Rice 10kg',
     Color: '',
@@ -144,6 +159,7 @@ export const KG10Rice: any = [
     Qty_in_ton: 20,
   },
   {
+    qty: 0,
     CodeName: 'JB10',
     FullName: 'Brown rice 10kg',
     Color: '',
@@ -153,6 +169,7 @@ export const KG10Rice: any = [
     Qty_in_ton: 20,
   },
   {
+    qty: 0,
     CodeName: 'F10',
     FullName: 'Frangipani rice 10kg',
     Color: '',
@@ -162,6 +179,7 @@ export const KG10Rice: any = [
     Qty_in_ton: 20,
   },
   {
+    qty: 0,
     CodeName: 'JR10',
     FullName: 'Jasmine Red rice 10 kg',
     Color: '',
@@ -174,6 +192,7 @@ export const KG10Rice: any = [
 
 export const KG20Rice: any = [
   {
+    qty: 0,
     CodeName: 'S20',
     FullName: 'Star Rice 20kg',
     Color: '',
@@ -183,6 +202,7 @@ export const KG20Rice: any = [
     Qty_in_ton: 20,
   },
   {
+    qty: 0,
     CodeName: 'JB20',
     FullName: 'Brown rice 20kg',
     Color: '',
@@ -195,6 +215,7 @@ export const KG20Rice: any = [
 
 export const Salt: any = [
   {
+    qty: 0,
     CodeName: 'SA250',
     FullName: 'Star salt 250G',
     Color: '',
@@ -204,6 +225,7 @@ export const Salt: any = [
     Qty_in_ton: 4000,
   },
   {
+    qty: 0,
     CodeName: 'SA500',
     FullName: 'Star salt 500G',
     Color: '',
@@ -213,6 +235,7 @@ export const Salt: any = [
     Qty_in_ton: 2000,
   },
   {
+    qty: 0,
     CodeName: 'SA1KG',
     FullName: 'Star salt 1KG',
     Color: '',
@@ -226,6 +249,7 @@ export const Salt: any = [
 
 export const LunchBox: any = [
   {
+    qty: 0,
     CodeName: 'Lunchbox - 105P',
     FullName: 'Lunchbox - 105P',
     Color: '',

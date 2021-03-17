@@ -23,6 +23,8 @@ export class ConfirmunloadComponent implements OnInit {
   ShipAgents = ShippingAgents;
   timeStamp = firebase.default.firestore.FieldValue.serverTimestamp();
   LoggedUser = this.authen.currentUSer;
+  docID: any;
+  sohSub: any;
 
   KG1 = KG1Rice;
   KG5 = KG5Rice;
@@ -42,6 +44,7 @@ export class ConfirmunloadComponent implements OnInit {
   selCnt: any = this.whServ.selectedCont;
   selCntDataSubscribtion: any;
   containerData: any;
+  Unload_amount: any;
 
   AllKG1 = ['A1', 'JG1', 'SW1', 'F1', 'S1', 'JB1', 'JR1'];
   AllKG5 = ['A5', 'JG5', 'F5', 'S5', 'JR5'];
@@ -52,6 +55,11 @@ export class ConfirmunloadComponent implements OnInit {
 
   ngOnInit() {
 
+    this.sohSub = this.afs.collection('lae-soh').valueChanges().subscribe((res: any) => {
+      res.forEach((element: any) => {
+        localStorage.setItem(element.CodeName, element.qty);
+      });
+    })
 
 
     this.confUnloadForm = this.fb.group({
@@ -71,7 +79,15 @@ export class ConfirmunloadComponent implements OnInit {
       unload_recorder: [, Validators.required],
       unload_start: [, Validators.required],
       partial_unload: [false, Validators.required],
+      damaged: this.fb.array([]),
     });
+
+    // this.confUnloadForm.controls['remaining'].disable()
+
+    this.Unload_amount = this.fb.group({
+      last_unload: this.fb.array([]),
+    })
+
 
     this.selCnt = this.selCnt.shipment_number + '_' + this.selCnt.container_number
     this.selCntDataSubscribtion = this.containerData = this.afs.collection('lae-exwh')
@@ -80,22 +96,28 @@ export class ConfirmunloadComponent implements OnInit {
       .subscribe((res: any) => {
         this.containerData = res;
         for (const item of res.remaining) {
-          if (res.remaining.length != this.confUnloadForm.value.remaining.length)
-            this.addSku()
+          if (res.remaining.length != this.confUnloadForm.value.remaining.length) {
+            this.addSku();
+            this.addAmountUnload();
+          }
         }
+
         this.confUnloadForm.setValue(res);
-        this.confUnloadForm.patchValue({ unload_recorder: this.LoggedUser })
-        // this.confUnloadForm.patchValue({remaining:res.remaining,skus:res.skus});
+        // ---------------------------set docID
+        this.docID = this.confUnloadForm.value.shipment_number + '_' + this.confUnloadForm.value.container_number
+        this.confUnloadForm.patchValue({
+          unload_recorder: this.LoggedUser,
+        });
       });
 
-    // this.confUnloadForm.patchValue({ remaining: this.containerData.remaining })
-  }
 
+
+
+  }
 
 
   unitDisplay(sku: string) {
     if (this.BagsSKU.includes(sku)) {
-      console.log(sku)
       return 'Bags';
     }
     else {
@@ -106,6 +128,8 @@ export class ConfirmunloadComponent implements OnInit {
 
   ngOndestroy() {
     this.selCntDataSubscribtion.unsubscribe();
+
+    this.sohSub.subscribe().unsubscribe();
   }
 
   get Skuform() {
@@ -116,16 +140,29 @@ export class ConfirmunloadComponent implements OnInit {
     return this.confUnloadForm.get('remaining') as FormArray;
   }
 
+  get Unload_amountform() {
+    return this.Unload_amount.get('last_unload') as FormArray;
+  }
+
   addSku() {
     const product = this.fb.group({
       skuCode: [, Validators.required],
       qty: [, Validators.required],
-      unit: [, Validators.required]
+      unit: [, Validators.required],
     })
     this.Skuform.push(product);
     this.Remainingform.push(product);
-
   }
+
+
+  addAmountUnload() {
+    const amount = this.fb.group({
+      unload_qty: [0, Validators.required],
+      damaged: [0, Validators.required],
+    })
+    this.Unload_amountform.push(amount);
+  }
+
 
   deleteSku(i: number) {
     this.Skuform.removeAt(i);
@@ -134,9 +171,73 @@ export class ConfirmunloadComponent implements OnInit {
   loading = false;
   submitHandler() {
     this.loading = true;
-    let docID = this.confUnloadForm.value.shipment_number + '_' + this.confUnloadForm.value.container_number
-    this.Fs.fireWrite('lae-exwh', this.confUnloadForm.value, docID);
+
+    this.Fs.fireWrite('lae-exwh', this.confUnloadForm.value, this.docID);
     this.loading = false;
   }
 
+
+  diffCalc(amount: number) {
+    let value = amount
+
+  }
+
+  partial = false;
+  fullUnload = false;
+
+  confirmunload() {
+
+    let confForm = this.confUnloadForm.value.remaining
+    let unloadAmount = this.Unload_amount.value.last_unload
+    let remainingCalc = []
+
+    if (confForm.partial_unload == true) {
+      this.fullUnload = true
+      //update partial to true
+      console.log(confForm.partial_unload);
+      //calc remaining
+      for (const [i, item] of [confForm.remaining].entries()) {
+
+      }
+      //update soh
+    }
+    else {
+      unloadAmount.forEach((element: any, i: number) => {
+        let diffCalc = element.unload_qty + confForm[i].qty
+        console.log(diffCalc)
+        //update soh
+        let sohItem = Number(localStorage.getItem(confForm[i].skuCode))
+        this.afs.collection('lae-soh').doc(confForm[i].skuCode).update({
+          qty: element.unload_qty + sohItem
+        })
+        //Mark emp cont
+        this.afs.collection('lae-exwh').doc(this.docID).update({ status: 'unloaded' });
+
+        //Prepare damage record
+        let damageRecord = {
+          date: firebase.default.firestore.FieldValue.serverTimestamp(),
+          item: confForm[i].skuCode,
+          loaded: confForm[i].qty,
+          damaged: element.damaged,
+          container_number: this.confUnloadForm.value.container_number,
+          shipment_number: this.confUnloadForm.value.shipment_number,
+          cheif_unload: this.confUnloadForm.value.chiefUnload,
+          create_user: this.LoggedUser
+        }
+
+      });
+    }
+  }
+
+  // this.afs.collection('lae-exwh').doc(this.selCnt).update({
+  //   remaining: this.confUnloadForm.value.remaining,
+  // });
+  // this.afs.collection('lae-exwh_partial_log').doc(this.selCnt).set({
+  //   date: Date.now(),
+  //   remaining: this.confUnloadForm.value.remaining,
+  //   chiefUnload: this.confUnloadForm.value.chiefUnload
+  // });
+
 }
+
+

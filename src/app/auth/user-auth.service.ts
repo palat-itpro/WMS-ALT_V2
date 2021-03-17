@@ -29,7 +29,7 @@ export class UserAuthService {
 
   getLogUser() {
     let user = localStorage.getItem('authState');
-    if(user) {
+    if (user) {
       return true
     }
     else {
@@ -40,14 +40,15 @@ export class UserAuthService {
   async loginWithGoogle() {
     await this.afAuth.signInWithPopup(new this.firebase.auth.GoogleAuthProvider())
       .catch(err => alert(err));
-      this.router.navigate(['dashboard'])
+    this.router.navigate(['dashboard'])
   }
 
   async LogOut() {
     await this.afAuth.signOut()
-    .then(() => {localStorage.removeItem('authState');
-    this.router.navigate(['']);
-  });
+      .then(() => {
+        localStorage.removeItem('authState');
+        this.router.navigate(['']);
+      });
   }
 
   //   get isLoggedIn(): boolean {

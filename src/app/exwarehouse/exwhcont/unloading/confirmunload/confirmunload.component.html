@@ -2,18 +2,17 @@
   <div fxLayout="column" fxLayoutGap="30px" fxFlexAlign="center">
     <mat-toolbar>
       <span>
-        Confirm unloaded products from
+        Actual unloaded products from
         {{ confUnloadForm.value.container_number }}
       </span>
     </mat-toolbar>
 
     <h4>
-      <mat-icon style="vertical-align: middle">ballot</mat-icon>Packing list
+      <mat-icon style="vertical-align: middle">ballot</mat-icon>Remaining
     </h4>
     <div>
       <div style="margin-left: 30px" *ngFor="let item of confUnloadForm.value.skus; let i = index">
         <li>
-          SKU CODE :
           {{ item.skuCode }}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;QTY :
           {{ item.qty }}
         </li>
@@ -21,10 +20,15 @@
     </div>
 
     <mat-divider></mat-divider>
-    <br />
-  </div>
+    <div fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="start start">
+      <section class="example-section">
+        <mat-checkbox formControlName="partial_unload" [checked]="partial">Partial Unload
+        </mat-checkbox>
+      </section>
+      <br />
+    </div>
 
-  <div fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="start start">
+
     <mat-form-field appearance="legacy">
       <mat-label>Chief unload officer</mat-label>
       <mat-select formControlName="chiefUnload">
@@ -33,28 +37,38 @@
     </mat-form-field>
   </div>
 
-  <div formArrayName="remaining">
-    <div *ngFor="let item of Remainingform.controls; let i = index" [formGroupName]="i">
-      <div fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="space-around center">
-        <mat-form-field>
-          <mat-label>Sku Code</mat-label>
-          <input matInput readonly type="text" formControlName="skuCode" />
-        </mat-form-field>
+</form>
 
-        <mat-form-field>
-          <mat-label>QTY</mat-label>
+<!-- ------------------------------------------------ -->
+
+<form [formGroup]="Unload_amount" autocomplete="off">
+
+  <br>
+
+  <div formArrayName="last_unload">
+    <div fxLayout="row" fxLayoutGap="30px" style="width: 5auto;" fxFlexAlign="center">
+      <div *ngFor="let item of Unload_amountform.controls; let i = index" [formGroupName]="i">
+        <mat-form-field appearance="fill" style="width: 100%;">
+          <span class="preandsub-fix" matPrefix>{{ confUnloadForm.value.remaining[i].skuCode
+            }}&nbsp;</span>
           <input matInput type="number" max="{{ confUnloadForm.value.remaining[i].qty }}" min="0"
-            formControlName="qty" />
+            formControlName="unload_qty" />
           <span matSuffix>{{ confUnloadForm.value.remaining[i].unit }}</span>
         </mat-form-field>
-
-        <!-- <button mat-raised-button color="warn" (click)="deleteSku(i)">Delete sku</button> -->
+        <br>
+        <mat-divider></mat-divider>
+        <mat-form-field appearance="fill" style="width: 100%;">
+          <mat-label class="damagedText">Damaged</mat-label>
+          <input matInput type="number" max="{{ confUnloadForm.value.remaining[i].qty }}" min="0"
+            formControlName="damaged" />
+          <span matSuffix>{{ confUnloadForm.value.remaining[i].unit }}</span>
+        </mat-form-field>
       </div>
     </div>
   </div>
 
-  <!-- <button mat-raised-button color="accent" (click)="addSku()">Add sku</button> -->
 </form>
+
 <br />
 
 <div *ngIf="confUnloadForm.valid">
@@ -62,16 +76,13 @@
     <mat-spinner></mat-spinner>
   </div>
   <button (matDialogClose)="(loading == false && confUnloadForm.value.skus[0] != '')" mat-raised-button color="primary"
-    (click)="submitHandler()">
+    (click)="confirmunload()">
     Submit
   </button>
   <span style="margin: 8px 8px 8px 0"></span>
-  <button (matDialogClose)="(loading == false && confUnloadForm.value.skus[0] != '')" mat-raised-button color="warn">
-    cancel
-  </button>
 </div>
-<!--
-<div style="width: 600px;">
-  {{ confUnloadForm.value | json }}
-
-</div> -->
+<br>
+<button matDialogClose mat-raised-button color="warn">
+  cancel
+</button>
+{{ confUnloadForm.value | json }}

@@ -49,6 +49,7 @@ export class AddcontainerComponent implements OnInit {
       chiefUnload: [],
       unload_recorder: [],
       partial_unload: [false, Validators.required],
+      damaged: this.fb.array([]),
     });
   }
 

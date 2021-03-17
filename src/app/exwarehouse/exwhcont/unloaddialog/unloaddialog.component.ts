@@ -17,19 +17,23 @@ export class UnloaddialogComponent implements OnInit {
     public exwhSv: ExwhService,
     public dialog: MatDialog,
     private afs: AngularFirestore
-    ) { }
+  ) { }
 
-    selCont: any = this.exwhSv.selectedCont
-    docID = this.exwhSv.selectedCont.shipment_number + `_` +this.exwhSv.selectedCont.container_number
+  selCont: any = this.exwhSv.selectedCont
+  docID = this.exwhSv.selectedCont.shipment_number + `_` + this.exwhSv.selectedCont.container_number
 
-  unloadCont(){
+  unloadCont() {
     console.log(this.docID)
     this.afs.collection('lae-exwh').doc(this.docID).update({
-      status:'unloading',
-      unload_start:this.fireServ.servTime()
+      status: 'unloading',
+      unload_start: this.fireServ.servTime()
     })
-    .catch((err: any) => {console.log(err)})
-    .then();
+      .catch((err: any) => { console.log(err) })
+      .then();
+
+    this.afs.collection('lae-unload-logs').doc(this.docID).set({
+      date: this.fireServ.servTime()
+    })
   }
 
 
