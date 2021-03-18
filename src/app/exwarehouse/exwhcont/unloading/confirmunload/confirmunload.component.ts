@@ -10,7 +10,7 @@ import { ExwhService } from '../../../services/exwh.service';
 import { AngularFirestore, AngularFirestoreDocument, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { exwhCont } from '../../../../models/exwhCont'
-
+import { partorderRequest } from '../../../../models/pOrderReq'
 
 @Component({
   selector: 'app-confirmunload',
@@ -110,9 +110,6 @@ export class ConfirmunloadComponent implements OnInit {
         });
       });
 
-
-
-
   }
 
 
@@ -189,12 +186,10 @@ export class ConfirmunloadComponent implements OnInit {
 
     let confForm = this.confUnloadForm.value.remaining
     let unloadAmount = this.Unload_amount.value.last_unload
-    let remainingCalc = []
 
     if (confForm.partial_unload == true) {
-      this.fullUnload = true
       //update partial to true
-      console.log(confForm.partial_unload);
+
       //calc remaining
       for (const [i, item] of [confForm.remaining].entries()) {
 
@@ -203,30 +198,69 @@ export class ConfirmunloadComponent implements OnInit {
     }
     else {
       unloadAmount.forEach((element: any, i: number) => {
-        let diffCalc = element.unload_qty + confForm[i].qty
-        console.log(diffCalc)
-        //update soh
-        let sohItem = Number(localStorage.getItem(confForm[i].skuCode))
-        this.afs.collection('lae-soh').doc(confForm[i].skuCode).update({
-          qty: element.unload_qty + sohItem
-        })
-        //Mark emp cont
-        this.afs.collection('lae-exwh').doc(this.docID).update({ status: 'unloaded' });
 
-        //Prepare damage record
-        let damageRecord = {
-          date: firebase.default.firestore.FieldValue.serverTimestamp(),
-          item: confForm[i].skuCode,
-          loaded: confForm[i].qty,
-          damaged: element.damaged,
-          container_number: this.confUnloadForm.value.container_number,
-          shipment_number: this.confUnloadForm.value.shipment_number,
-          cheif_unload: this.confUnloadForm.value.chiefUnload,
-          create_user: this.LoggedUser
+        if (element.unload_qty === confForm[i].qty) {
+          let ActualUnload = element.unload_qty
+          this.updateSoh(ActualUnload, confForm[i].skuCode)
+        }
+
+        //check short || extra
+
+        if (element.unload_qty > confForm[i].qty) {
+
+          let partOrder_req: partorderRequest = {
+            date: this.timeStamp,
+            remark: 'Extra unload from ' + this.confUnloadForm.value.container_number + ' shipment ' + this.confUnloadForm.value.shipment_number,
+            requestor: this.authen.currentUSer,
+            event: 'IN',
+            status: 'pending',
+            qty: element.unload_qty - confForm[i].qty,
+            man_approve: null,
+            section_sup: null
+          }
+          this.partRequest(partOrder_req);
+          let diff = element.unload_qty - confForm[i].qty
+          let ActualUnload = element.unload_qty - diff
+          this.updateSoh(ActualUnload, confForm[i].skuCode)
+
+        }
+        if (element.unload_qty < confForm[i].qty) {
+          let partOrder_req: partorderRequest = {
+            date: this.timeStamp,
+            remark: 'Short unload from ' + this.confUnloadForm.value.container_number + ' shipment ' + this.confUnloadForm.value.shipment_number,
+            requestor: this.authen.currentUSer,
+            event: 'OUT',
+            status: 'pending',
+            qty: confForm[i].qty - element.unload_qty,
+            man_approve: null,
+            section_sup: null
+          }
+
+          this.partRequest(partOrder_req);
+          let ActualUnload = element.unload_qty
+          this.updateSoh(ActualUnload, confForm[i].skuCode)
+        }
+
+
+        if (element.damaged > 0) {
+          //Prepare damage record
+          let damageRecord = {
+            date: this.timeStamp,
+            item: confForm[i].skuCode,
+            loaded: confForm[i].qty,
+            damaged: element.damaged,
+            container_number: this.confUnloadForm.value.container_number,
+            shipment_number: this.confUnloadForm.value.shipment_number,
+            cheif_unload: this.confUnloadForm.value.chiefUnload,
+            create_user: this.LoggedUser
+          }
+          this.afs.collection('lae-unload-damage').doc().set(damageRecord)
         }
 
       });
     }
+    //Mark emp cont
+    // this.afs.collection('lae-exwh').doc(this.docID).update({ status: 'unloaded' });
   }
 
   // this.afs.collection('lae-exwh').doc(this.selCnt).update({
@@ -238,6 +272,15 @@ export class ConfirmunloadComponent implements OnInit {
   //   chiefUnload: this.confUnloadForm.value.chiefUnload
   // });
 
+  partRequest(data: partorderRequest) {
+    this.afs.collection('lae-partorder-req').doc().set(data)
+  }
+
+  updateSoh(data: number, item: string) {
+    this.afs.collection('lae-soh').doc(item).update({
+      qty: data
+    });
+  }
 }
 
 
