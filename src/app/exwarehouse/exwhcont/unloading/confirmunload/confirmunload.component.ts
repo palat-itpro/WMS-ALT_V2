@@ -45,7 +45,7 @@ export class ConfirmunloadComponent implements OnInit {
   selCntDataSubscribtion: any;
   containerData: any;
   Unload_amount: any;
-
+  emptyCont = false
   AllKG1 = ['A1', 'JG1', 'SW1', 'F1', 'S1', 'JB1', 'JR1'];
   AllKG5 = ['A5', 'JG5', 'F5', 'S5', 'JR5'];
   AllKG10 = ['A10', 'S10', 'JR10', 'JB10', 'F10', 'JG10']
@@ -88,6 +88,8 @@ export class ConfirmunloadComponent implements OnInit {
       last_unload: this.fb.array([]),
     })
 
+    this.Unload_amount.invalid
+
 
     this.selCnt = this.selCnt.shipment_number + '_' + this.selCnt.container_number
     this.selCntDataSubscribtion = this.containerData = this.afs.collection('lae-exwh')
@@ -95,7 +97,7 @@ export class ConfirmunloadComponent implements OnInit {
       .valueChanges()
       .subscribe((res: any) => {
         this.containerData = res;
-        for (const item of res.remaining) {
+        for (const _item of res.remaining) {
           if (res.remaining.length != this.confUnloadForm.value.remaining.length) {
             this.addSku();
             this.addAmountUnload();
@@ -184,18 +186,18 @@ export class ConfirmunloadComponent implements OnInit {
 
   confirmunload() {
 
-    let confForm = this.confUnloadForm.value.remaining
-    let unloadAmount = this.Unload_amount.value.last_unload
+    let confForm: Array<any> = this.confUnloadForm.value.remaining
+    let unloadAmount: Array<any> = this.Unload_amount.value.last_unload
     let RemaminingItems: Array<any> = []
 
 
     if (this.confUnloadForm.value.partial_unload == true) {
 
       unloadAmount.forEach((element: any, i: number) => {
-        console.log(i)
-        let unloadedPlusSOH = unloadAmount[i].unload_qty + Number(localStorage.getItem(element.skuCode));
-        console.log(unloadedPlusSOH)
-        this.updateSoh(unloadedPlusSOH, element.skuCode);
+
+        let unloadedPlusSOH = Number(localStorage.getItem(confForm[i].skuCode)) + unloadAmount[i].unload_qty
+
+        this.updateSoh(unloadedPlusSOH, confForm[i].skuCode);
 
         RemaminingItems.push({
           qty: confForm[i].qty - unloadAmount[i].unload_qty,
@@ -219,51 +221,34 @@ export class ConfirmunloadComponent implements OnInit {
         }
 
       });
-      console.log(RemaminingItems)
-      //update partial to true
-      // console.log('partial');
-      //update remaining
-      // for (const [i, item] of [confForm].entries()) {
-      //   //Update SOH
-      //   this.updateSoh(unloadAmount[i].unload_qty, confForm[i].skuCode);
-      // RemaminingItems.push({
-      //   qty: confForm[i].qty - unloadAmount[i].unload_qty,
-      //   skuCode: confForm[i].skuCode,
-      //   unit: confForm[i].skuCode,
-      // });
-      //   console.log(RemaminingItems)
 
-      // if (item.damaged > 0) {
-      //   //Prepare damage record
-      //   let damageRecord = {
-      //     date: this.timeStamp,
-      //     item: confForm[i].skuCode,
-      //     loaded: confForm[i].qty,
-      //     damaged: item.damaged,
-      //     container_number: this.confUnloadForm.value.container_number,
-      //     shipment_number: this.confUnloadForm.value.shipment_number,
-      //     cheif_unload: this.confUnloadForm.value.chiefUnload,
-      //     create_user: this.LoggedUser
-      //   }
-      //   this.afs.collection('lae-unload-damage').doc().set(damageRecord)
-      // }
+      this.confUnloadForm.patchValue({ remaining: RemaminingItems })
+
+      confForm.forEach((element: any, i: number) => {
+        if (element.qty == 0) {
+          this.emptyCont = true
+        }
+      });
+      if (this.emptyCont == true) {
+        this.afs.collection('lae-exwh').doc(this.docID).update({ status: 'unloaded' });
+      }
 
 
-      // this.confUnloadForm.patchValue({ remaining: RemaminingItems })
-
-      // this.afs.collection('lae-exwh').doc(this.docID).update({ remaining: this.confUnloadForm.value.remaining });
+      this.afs.collection('lae-exwh').doc(this.docID)
+        .update({ remaining: this.confUnloadForm.value.remaining });
 
     }
-    else {
+
+    //--------------------------------------------------------------------------
+    if (this.confUnloadForm.value.partial_unload == false) {
+
       unloadAmount.forEach((element: any, i: number) => {
 
         if (element.unload_qty === confForm[i].qty) {
           let ActualUnload = element.unload_qty + Number(localStorage.getItem(confForm[i].skuCode))
-          console.log(ActualUnload)
           this.updateSoh(ActualUnload, confForm[i].skuCode)
         }
 
-        //check short || extra
 
         if (element.unload_qty > confForm[i].qty) {
 
@@ -280,7 +265,6 @@ export class ConfirmunloadComponent implements OnInit {
           this.partRequest(partOrder_req);
           let diff = element.unload_qty - confForm[i].qty
           let toTalqty = element.unload_qty - diff + Number(localStorage.getItem(confForm[i].skuCode))
-          console.log(toTalqty)
           this.updateSoh(toTalqty, confForm[i].skuCode)
 
         }
@@ -298,7 +282,6 @@ export class ConfirmunloadComponent implements OnInit {
 
           this.partRequest(partOrder_req);
           let toTalqty = element.unload_qty + Number(localStorage.getItem(confForm[i].skuCode))
-          console.log(toTalqty)
           this.updateSoh(toTalqty, confForm[i].skuCode)
         }
 
@@ -320,21 +303,22 @@ export class ConfirmunloadComponent implements OnInit {
 
       });
     }
+
+    confForm.forEach((element: any, i: number) => {
+      RemaminingItems.push({
+        qty: 0,
+        skuCode: confForm[i].skuCode,
+        unit: confForm[i].skuCode,
+      });
+    });
+
+    this.confUnloadForm.patchValue({ remaining: RemaminingItems, status: 'unloaded' });
+
     //Mark emp cont
-    // this.afs.collection('lae-exwh').doc(this.docID).update({ status: 'unloaded' });
     this.afs.collection('lae-unload-logs').doc().set(this.confUnloadForm.value);
-    // this.afs.collection('lae-exwh').doc(this.docID).update(this.confUnloadForm.value);
+    this.afs.collection('lae-exwh').doc(this.docID).update(this.confUnloadForm.value);
 
   }
-
-  // this.afs.collection('lae-exwh').doc(this.selCnt).update({
-  //   remaining: this.confUnloadForm.value.remaining,
-  // });
-  // this.afs.collection('lae-exwh_partial_log').doc(this.selCnt).set({
-  //   date: Date.now(),
-  //   remaining: this.confUnloadForm.value.remaining,
-  //   chiefUnload: this.confUnloadForm.value.chiefUnload
-  // });
 
   partRequest(data: partorderRequest) {
     this.afs.collection('lae-partorder-req').doc().set(data)

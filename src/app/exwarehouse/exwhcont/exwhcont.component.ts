@@ -7,14 +7,14 @@ import { UnloaddialogComponent } from './unloaddialog/unloaddialog.component'
 import { ExwhService } from '../services/exwh.service';
 
 export interface exWHcont {
-  added_by : string;
+  added_by: string;
   agent: string;
   container_number: string;
   date_added: number;
   dft: number;
   inspection: number;
   shipment_number: number;
-  sku: [skuCode: string,qty: number];
+  sku: [skuCode: string, qty: number];
   vessel: string;
 }
 
@@ -30,20 +30,20 @@ export class ExwhcontComponent implements OnInit {
 
   constructor(public dialog: MatDialog,
     public afs: AngularFirestore,
-    public exwhSv:ExwhService
-    ) { }
+    public exwhSv: ExwhService
+  ) { }
 
   openDialog() {
     this.dialog.open(AddcontainerComponent);
   }
 
   exWHsubscribtion = this.afs.collection('lae-exwh', ref => ref.where('status', '==', 'Ready to unload'))
-  .valueChanges();
+    .valueChanges();
   exWHdata!: any;
 
   displayedColumns: string[] = ['Agent',
-  'Shipment_Number',
-   'Container_Number',
+    'Shipment_Number',
+    'Container_Number',
     'DFT',
     'Product',
     'Inspection',
@@ -57,17 +57,15 @@ export class ExwhcontComponent implements OnInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  async settoUnloading(sm: string,cnt: string) {
-    console.log(sm,cnt)
-    this.exwhSv.selectedCont = {shipment_number:sm,container_number:cnt}
+  async settoUnloading(sm: string, cnt: string) {
+    this.exwhSv.selectedCont = { shipment_number: sm, container_number: cnt }
     this.dialog.open(UnloaddialogComponent);
   }
 
 
   ngOnInit() {
-    this.exWHsubscribtion.subscribe((res: any) =>{
+    this.exWHsubscribtion.subscribe((res: any) => {
       // res.forEach((element: any) => {
-      //   console.log(element.payload.doc.id)
       // });
       // this.exWHdata = res;
       this.dataSource = new MatTableDataSource(res);

@@ -23,12 +23,11 @@ export class UnloaddialogComponent implements OnInit {
   docID = this.exwhSv.selectedCont.shipment_number + `_` + this.exwhSv.selectedCont.container_number
 
   unloadCont() {
-    console.log(this.docID)
     this.afs.collection('lae-exwh').doc(this.docID).update({
       status: 'unloading',
       unload_start: this.fireServ.servTime()
     })
-      .catch((err: any) => { console.log(err) })
+      .catch((err: any) => { alert(err) })
       .then();
 
     this.afs.collection('lae-unload-logs').doc(this.docID).set({

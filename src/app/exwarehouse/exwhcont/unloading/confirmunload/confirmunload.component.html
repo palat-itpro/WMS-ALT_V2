@@ -75,14 +75,14 @@
   <div *ngIf="loading == true">
     <mat-spinner></mat-spinner>
   </div>
-  <button (matDialogClose)="(loading == false && confUnloadForm.value.skus[0] != '')" mat-raised-button color="primary"
-    (click)="confirmunload()">
+  <button (matDialogClose)="Unload_amount.valid" mat-raised-button color="primary" (click)="confirmunload()">
     Submit
   </button>
   <span style="margin: 8px 8px 8px 0"></span>
+  <button matDialogClose mat-raised-button color="warn">
+    cancel
+  </button>
 </div>
 <br>
-<button matDialogClose mat-raised-button color="warn">
-  cancel
-</button>
+
 <!-- {{ confUnloadForm.value | json }} -->

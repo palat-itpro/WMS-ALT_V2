@@ -32,7 +32,6 @@ export class AddcontainerComponent implements OnInit {
 
   ngOnInit() {
 
-    console.log(this.selectedCont);
 
     this.AddContForm = this.fb.group({
       date_added: [Date.now()],
