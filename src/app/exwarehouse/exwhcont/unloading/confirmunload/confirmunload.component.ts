@@ -186,21 +186,80 @@ export class ConfirmunloadComponent implements OnInit {
 
     let confForm = this.confUnloadForm.value.remaining
     let unloadAmount = this.Unload_amount.value.last_unload
+    let RemaminingItems: Array<any> = []
 
-    if (confForm.partial_unload == true) {
+
+    if (this.confUnloadForm.value.partial_unload == true) {
+
+      unloadAmount.forEach((element: any, i: number) => {
+        console.log(i)
+        let unloadedPlusSOH = unloadAmount[i].unload_qty + Number(localStorage.getItem(element.skuCode));
+        console.log(unloadedPlusSOH)
+        this.updateSoh(unloadedPlusSOH, element.skuCode);
+
+        RemaminingItems.push({
+          qty: confForm[i].qty - unloadAmount[i].unload_qty,
+          skuCode: confForm[i].skuCode,
+          unit: confForm[i].skuCode,
+        });
+
+        if (unloadAmount[i].damaged > 0) {
+          //Prepare damage record
+          let damageRecord = {
+            date: this.timeStamp,
+            item: confForm[i].skuCode,
+            loaded: confForm[i].qty,
+            damaged: element.damaged,
+            container_number: this.confUnloadForm.value.container_number,
+            shipment_number: this.confUnloadForm.value.shipment_number,
+            cheif_unload: this.confUnloadForm.value.chiefUnload,
+            create_user: this.LoggedUser
+          }
+          this.afs.collection('lae-unload-damage').doc().set(damageRecord)
+        }
+
+      });
+      console.log(RemaminingItems)
       //update partial to true
+      // console.log('partial');
+      //update remaining
+      // for (const [i, item] of [confForm].entries()) {
+      //   //Update SOH
+      //   this.updateSoh(unloadAmount[i].unload_qty, confForm[i].skuCode);
+      // RemaminingItems.push({
+      //   qty: confForm[i].qty - unloadAmount[i].unload_qty,
+      //   skuCode: confForm[i].skuCode,
+      //   unit: confForm[i].skuCode,
+      // });
+      //   console.log(RemaminingItems)
 
-      //calc remaining
-      for (const [i, item] of [confForm.remaining].entries()) {
+      // if (item.damaged > 0) {
+      //   //Prepare damage record
+      //   let damageRecord = {
+      //     date: this.timeStamp,
+      //     item: confForm[i].skuCode,
+      //     loaded: confForm[i].qty,
+      //     damaged: item.damaged,
+      //     container_number: this.confUnloadForm.value.container_number,
+      //     shipment_number: this.confUnloadForm.value.shipment_number,
+      //     cheif_unload: this.confUnloadForm.value.chiefUnload,
+      //     create_user: this.LoggedUser
+      //   }
+      //   this.afs.collection('lae-unload-damage').doc().set(damageRecord)
+      // }
 
-      }
-      //update soh
+
+      // this.confUnloadForm.patchValue({ remaining: RemaminingItems })
+
+      // this.afs.collection('lae-exwh').doc(this.docID).update({ remaining: this.confUnloadForm.value.remaining });
+
     }
     else {
       unloadAmount.forEach((element: any, i: number) => {
 
         if (element.unload_qty === confForm[i].qty) {
-          let ActualUnload = element.unload_qty
+          let ActualUnload = element.unload_qty + Number(localStorage.getItem(confForm[i].skuCode))
+          console.log(ActualUnload)
           this.updateSoh(ActualUnload, confForm[i].skuCode)
         }
 
@@ -220,8 +279,9 @@ export class ConfirmunloadComponent implements OnInit {
           }
           this.partRequest(partOrder_req);
           let diff = element.unload_qty - confForm[i].qty
-          let ActualUnload = element.unload_qty - diff
-          this.updateSoh(ActualUnload, confForm[i].skuCode)
+          let toTalqty = element.unload_qty - diff + Number(localStorage.getItem(confForm[i].skuCode))
+          console.log(toTalqty)
+          this.updateSoh(toTalqty, confForm[i].skuCode)
 
         }
         if (element.unload_qty < confForm[i].qty) {
@@ -237,8 +297,9 @@ export class ConfirmunloadComponent implements OnInit {
           }
 
           this.partRequest(partOrder_req);
-          let ActualUnload = element.unload_qty
-          this.updateSoh(ActualUnload, confForm[i].skuCode)
+          let toTalqty = element.unload_qty + Number(localStorage.getItem(confForm[i].skuCode))
+          console.log(toTalqty)
+          this.updateSoh(toTalqty, confForm[i].skuCode)
         }
 
 
@@ -261,6 +322,9 @@ export class ConfirmunloadComponent implements OnInit {
     }
     //Mark emp cont
     // this.afs.collection('lae-exwh').doc(this.docID).update({ status: 'unloaded' });
+    this.afs.collection('lae-unload-logs').doc().set(this.confUnloadForm.value);
+    // this.afs.collection('lae-exwh').doc(this.docID).update(this.confUnloadForm.value);
+
   }
 
   // this.afs.collection('lae-exwh').doc(this.selCnt).update({
